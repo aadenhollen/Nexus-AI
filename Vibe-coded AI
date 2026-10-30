@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS AI</title>
+<style>
+*{box-sizing:border-box}
+:root{--bg:#090914;--panel:#111120;--panel2:#17172a;--purple:#9b65ff;--blue:#4d9dff;--text:#f4f1ff;--muted:#9290aa;--border:#29283e}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;min-height:100vh}
+button,textarea,input{font:inherit}
+button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+.sidebar{width:245px;background:#0d0d19;border-right:1px solid var(--border);padding:22px 15px;display:flex;flex-direction:column;gap:20px}
+.logo{font-size:24px;font-weight:900;letter-spacing:2px;padding:8px}
+.logo span{color:var(--purple)}
+.tag{font-size:10px;color:var(--muted);letter-spacing:3px;padding-left:9px}
+.new{background:linear-gradient(110deg,#8b50f5,#426dff);border:0;color:white;padding:13px;border-radius:11px;font-weight:bold}
+.nav{display:grid;gap:8px}
+.nav button{background:transparent;color:var(--muted);border:1px solid transparent;text-align:left;padding:13px;border-radius:10px}
+.nav button:hover,.nav button.active{background:var(--panel2);color:white;border-color:var(--border)}
+.sidebottom{margin-top:auto;color:var(--muted);font-size:12px;line-height:1.7;padding:10px}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:68px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 25px}
+.topbar small{color:var(--muted)}
+.status{font-size:12px;color:#8de9bc}
+.content{padding:30px;max-width:1100px;width:100%;margin:auto}
+.welcome{text-align:center;margin:35px 0 30px}
+.welcome h1{font-size:clamp(30px,5vw,48px);margin:10px 0;background:linear-gradient(90deg,#fff,#b68aff,#69baff);color:transparent;background-clip:text}
+.welcome p{color:var(--muted);line-height:1.6}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:25px 0}
+.card{background:var(--panel);border:1px solid var(--border);padding:19px;border-radius:14px;text-align:left;color:white}
+.card:hover{border-color:var(--purple);transform:translateY(-2px)}
+.card b{display:block;margin:10px 0}
+.card small{color:var(--muted);line-height:1.5}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:18px}
+.panel h2{margin:0 0 8px;font-size:20px}
+.muted{color:var(--muted);font-size:13px;line-height:1.6}
+.chatlog{height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:12px 2px}
+.msg{padding:13px 15px;border-radius:13px;max-width:85%;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.user{background:#33235c;align-self:flex-end}
+.bot{background:#1b1b2d;align-self:flex-start}
+.chatbar{display:flex;gap:9px;margin-top:12px}
+.chatbar textarea{flex:1;min-width:0;resize:vertical;min-height:48px;max-height:120px}
+input,textarea,select{background:#0c0c18;border:1px solid var(--border);color:white;border-radius:10px;padding:13px;outline:none}
+input:focus,textarea:focus{border-color:var(--purple)}
+.action{background:linear-gradient(110deg,#9255ef,#477dff);color:white;border:0;border-radius:10px;padding:12px 17px;font-weight:bold}
+.secondary{background:var(--panel2);color:white;border:1px solid var(--border);border-radius:9px;padding:10px 14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.result{font-size:27px;font-weight:bold;color:#a987ff;overflow-wrap:anywhere;padding:12px 0}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.toolarea{width:100%;min-height:130px;resize:vertical;line-height:1.5;font-family:monospace}
+.editor{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.editor label{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}
+.editor textarea{width:100%;min-height:190px;resize:vertical;font-family:monospace;font-size:13px}
+.preview{width:100%;height:300px;background:white;border:0;border-radius:10px}
+.hidden{display:none!important}
+.footer{text-align:center;color:var(--muted);font-size:11px;padding:30px}
+@media(max-width:700px){.sidebar{width:65px;padding:12px 7px}.logo{font-size:14px;padding:8px 2px}.logo span,.tag,.nav button span,.sidebottom{display:none}.nav button{text-align:center;padding:12px 3px}.new{font-size:0;padding:12px}.new:after{content:"+";font-size:20px}.content{padding:15px}.cards{grid-template-columns:1fr}.editor{grid-template-columns:1fr}.topbar{padding:0 12px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+ <div class="logo">NEXUS<span>AI</span></div>
+ <div class="tag">YOUR AI WORKSPACE</div>
+ <button class="new" onclick="newChat()">＋ New conversation</button>
+ <div class="nav">
+  <button class="active" onclick="showPage('home',this)">🏠 <span>Home</span></button>
+  <button onclick="showPage('chat',this)">💬 <span>AI Chat</span></button>
+  <button onclick="showPage('math',this)">∑ <span>Math Lab</span></button>
+  <button onclick="showPage('code',this)">⌨️ <span>Code Studio</span></button>
+ </div>
+ <div class="sidebottom">NEXUS AI<br>Think bigger. Build anything.<br><br>Version 1.0</div>
+</aside>
+
+<main class="main">
+ <header class="topbar">
+  <b id="pageTitle">Home</b>
+  <span class="status">● SYSTEM ONLINE</span>
+ </header>
+
+ <div class="content">
+  <section id="home">
+   <div class="welcome">
+    <div style="font-size:35px">✦</div>
+    <h1>Welcome to NEXUS AI</h1>
+    <p>Your space to explore ideas, solve problems, and create something incredible.</p>
+   </div>
+   <div class="cards">
+    <button class="card" onclick="showPage('chat')"><div>💬</div><b>AI Chat</b><small>Ask questions, brainstorm ideas and get help.</small></button>
+    <button class="card" onclick="showPage('math')"><div>∑</div><b>Math Lab</b><small>Calculate expressions and solve math problems.</small></button>
+    <button class="card" onclick="showPage('code')"><div>⌨️</div><b>Code Studio</b><small>Write code and see your website preview.</small></button>
+   </div>
+   <div class="panel">
+    <h2>🚀 Your creative workspace</h2>
+    <p class="muted">Choose a tool from the sidebar to get started. This is your launchpad for learning, experimenting and building.</p>
+   </div>
+  </section>
+
+  <section id="chat" class="hidden">
+   <div class="welcome">
+    <h1>NEXUS Chat</h1>
+    <p>Ask away. Your ideas start here.</p>
+   </div>
+   <div class="panel">
+    <div class="row">
+     <label class="muted">MODE:</label>
+     <select id="mode">
+      <option>General</option><option>Code</option><option>Math</option><option>Creative</option>
+     </select>
+     <button class="secondary" onclick="clearChat()">Clear chat</button>
+    </div>
+    <div id="chatlog" class="chatlog">
+     <div class="msg bot">Welcome to NEXUS AI! What would you like to explore?</div>
+    </div>
+    <div class="chatbar">
+     <textarea id="message" placeholder="Message NEXUS AI..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+     <button class="action" onclick="sendMessage()">Send ➤</button>
+    </div>
+    <p class="muted">Demo mode: connect an AI provider to enable real AI-generated answers.</p>
+   </div>
+  </section>
+
+  <section id="math" class="hidden">
+   <div class="welcome">
+    <h1>Math Lab</h1>
+    <p>Your built-in calculator. Fast, simple and ready to work.</p>
+   </div>
+   <div class="panel">
+    <h2>Scientific calculator</h2>
+    <p class="muted">Use +, -, *, /, ^, parentheses, sqrt(), sin(), cos(), tan(), abs(), log(), pi and e.</p>
+    <input id="expression" style="width:100%;font-size:19px" placeholder="Example: (25 * 4) + sqrt(144)">
+    <div class="tools">
+     <button class="secondary" onclick="addMath('7')">7</button>
+     <button class="secondary" onclick="addMath('8')">8</button>
+     <button class="secondary" onclick="addMath('9')">9</button>
+     <button class="secondary" onclick="addMath('/')">÷</button>
+     <button class="secondary" onclick="addMath('4')">4</button>
+     <button class="secondary" onclick="addMath('5')">5</button>
+     <button class="secondary" onclick="addMath('6')">6</button>
+     <button class="secondary" onclick="addMath('*')">×</button>
+     <button class="secondary" onclick="addMath('1')">1</button>
+     <button class="secondary" onclick="addMath('2')">2</button>
+     <button class="secondary" onclick="addMath('3')">3</button>
+     <button class="secondary" onclick="addMath('-')">−</button>
+     <button class="secondary" onclick="addMath('0')">0</button>
+     <button class="secondary" onclick="addMath('.')">.</button>
+     <button class="secondary" onclick="addMath('(')">(</button>
+     <button class="secondary" onclick="addMath(')')">)</button>
+     <button class="secondary" onclick="addMath('+')">+</button>
+     <button class="secondary" onclick="addMath('^')">^</button>
+     <button class="secondary" onclick="addMath('sqrt(')">√</button>
+     <button class="secondary" onclick="addMath('pi')">π</button>
+     <button class="secondary" onclick="document.getElementById('expression').value=''">Clear</button>
+    </div>
+    <button class="action" onclick="calculate()" style="width:100%">Calculate =</button>
+    <div class="muted">RESULT</div>
+    <div id="result" class="result">Waiting for calculation...</div>
+   </div>
+  </section>
+
+  <section id="code" class="hidden">
+   <div class="welcome">
+    <h1>Code Studio</h1>
+    <p>Write code. Experiment. Build something awesome.</p>
+   </div>
+   <div class="panel">
+    <h2>Live website editor</h2>
+    <p class="muted">Edit HTML, CSS and JavaScript, then press Run to see your creation.</p>
+    <div class="editor">
+     <div><label>HTML</label><textarea id="htmlCode"><h1>Hello, NEXUS!</h1>
+<p>I just built my first website.</p>
+<button onclick="alert('It works!')">Click me</button></textarea></div>
+     <div><label>CSS</label><textarea id="cssCode">body {
+ background: #111120;
+ color: white;
+ font-family: Arial;
+ text-align: center;
+ padding: 40px;
+}
+h1 { color: #a987ff; }
+button {
+ background: #8255ed;
+ color: white;
+ padding: 12px 25px;
+ border: 0;
+ border-radius: 8px;
+}</textarea></div>
+    </div>
+    <label class="muted">JAVASCRIPT</label>
+    <textarea id="jsCode" class="toolarea">console.log("Hello from NEXUS!");</textarea>
+    <div class="tools">
+     <button class="action" onclick="runCode()">▶ Run code</button>
+     <button class="secondary" onclick="resetCode()">Reset example</button>
+    </div>
+    <h2>Live preview</h2>
+    <iframe id="preview" class="preview" sandbox="allow-scripts"></iframe>
+   </div>
+  </section>
+ </div>
+ <div class="footer">NEXUS AI · CREATE WITHOUT LIMITS</div>
+</main>
+</div>
+
+<script>
+function showPage(id,button){
+ document.querySelectorAll('.content section').forEach(s=>s.classList.add('hidden'));
+ document.getElementById(id).classList.remove('hidden');
+ document.getElementById('pageTitle').textContent={home:'Home',chat:'AI Chat',math:'Math Lab',code:'Code Studio'}[id];
+ document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+ if(button)button.classList.add('active');
+ else document.querySelectorAll('.nav button').forEach(b=>{if(b.getAttribute('onclick').includes("'"+id+"'"))b.classList.add('active')});
+}
+function newChat(){clearChat();showPage('chat')}
+function clearChat(){document.getElementById('chatlog').innerHTML='<div class="msg bot">New conversation started. What is on your mind?</div>'}
+function addMessage(text,type){
+ const d=document.createElement('div');d.className='msg '+type;d.textContent=text;
+ const log=document.getElementById('chatlog');log.appendChild(d);log.scrollTop=log.scrollHeight;
+}
+function sendMessage(){
+ const input=document.getElementById('message');
+ const value=input.value.trim();if(!value)return;
+ addMessage(value,'user');input.value='';
+ const mode=document.getElementById('mode').value;
+ let answer="NEXUS is currently running in demo mode. The website interface is working, but real AI answers need a connected AI provider and a secure server. Your message was: "+value;
+ if(mode==='Math')answer+="\n\nFor calculations, open Math Lab.";
+ if(mode==='Code')answer+="\n\nFor coding experiments, open Code Studio.";
+ setTimeout(()=>addMessage(answer,'bot'),250);
+}
+function addMath(value){document.getElementById('expression').value+=value}
+function calculate(){
+ const input=document.getElementById('expression').value;
+ try{
+  const tokens=input.match(/(?:\d+\.?\d*|\.\d+|[a-zA-Z]+|[()+\-*/^])/g)||[];
+  if(tokens.join('')!==input.replace(/\s/g,''))throw Error('Invalid characters');
+  let pos=0;
+  function expression(){let x=term();while(tokens[pos]==='+'||tokens[pos]==='-'){let op=tokens[pos++],y=term();x=op==='+'?x+y:x-y}return x}
+  function term(){let x=power();while(tokens[pos]==='*'||tokens[pos]==='/'){let op=tokens[pos++],y=power();if(op==='/'&&y===0)throw Error('Cannot divide by zero');x=op==='*'?x*y:x/y}return x}
+  function power(){let x=unary();if(tokens[pos]==='^'){pos++;x=Math.pow(x,power())}return x}
+  function unary(){if(tokens[pos]==='-'){pos++;return -unary()}if(tokens[pos]==='+'){pos++;return unary()}return atom()}
+  function atom(){
+   let t=tokens[pos++];
+   if(t==='('){let x=expression();if(tokens[pos++]!==')')throw Error('Missing )');return x}
+   if(!t)throw Error('Incomplete expression');
+   if(!isNaN(Number(t)))return Number(t);
+   if(t==='pi')return Math.PI;if(t==='e')return Math.E;
+   if(['sqrt','sin','cos','tan','abs','log'].includes(t)){
+    if(tokens[pos++]!=='(')throw Error('Function needs parentheses');
+    let x=expression();if(tokens[pos++]!==')')throw Error('Missing )');
+    if(t==='sqrt')return Math.sqrt(x);
+    if(t==='sin')return Math.sin(x*Math.PI/180);
+    if(t==='cos')return Math.cos(x*Math.PI/180);
+    if(t==='tan')return Math.tan(x*Math.PI/180);
+    if(t==='abs')return Math.abs(x);
+    return Math.log10(x);
+   }
+   throw Error('Unknown value: '+t);
+  }
+  if(!tokens.length)throw Error('Enter an expression');
+  let answer=expression();if(pos!==tokens.length||!Number.isFinite(answer))throw Error('Invalid expression');
+  document.getElementById('result').textContent=Number(answer.toPrecision(12)).toString();
+ }catch(e){document.getElementById('result').textContent='Error: '+e.message}
+}
+function runCode(){
+ const html=document.getElementById('htmlCode').value;
+ const css=document.getElementById('cssCode').value;
+ const js=document.getElementById('jsCode').value;
+ document.getElementById('preview').srcdoc='<!DOCTYPE html><html><head><style>'+css+'</style></head><body>'+html+'<script>'+js.replace(/<\/script/gi,'<\\/script')+'<\/script></body></html>';
+}
+function resetCode(){
+ document.getElementById('htmlCode').value='<h1>Hello, NEXUS!</h1>\n<p>I just built my first website.</p>\n<button onclick="alert(\\'It works!\\')">Click me</button>';
+ document.getElementById('cssCode').value='body { background:#111120; color:white; font-family:Arial; text-align:center; padding:40px; }\nh1 { color:#a987ff; }\nbutton { background:#8255ed; color:white; padding:12px 25px; border:0; border-radius:8px; }';
+ document.getElementById('jsCode').value='console.log("Hello from NEXUS!");';
+ runCode();
+}
+runCode();
+</script>
+</body>
+</html>
